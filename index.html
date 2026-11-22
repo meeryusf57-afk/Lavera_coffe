@@ -1,0 +1,778 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#006241">
+<title>LA VERA COFFEE Italy - نظام إدارة المبيعات والمخزون</title>
+<style>
+  :root {
+    --primary: #006241;
+    --primary-dark: #00472f;
+    --primary-light: #e6f2ed;
+    --accent: #d4af37;
+    --bg: #f4f6f5;
+    --card: #ffffff;
+    --text: #1a2420;
+    --muted: #5f6f68;
+    --border: #dce5e1;
+    --danger: #c62828;
+    --success: #2e7d32;
+    --warning: #ef6c00;
+  }
+  * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; -webkit-tap-highlight-color: transparent; }
+  body { margin: 0; padding: 0; background: var(--bg); color: var(--text); padding-bottom: 80px; }
+  header {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+    color: #fff;
+    padding: 18px 16px;
+    padding-top: max(18px, env(safe-area-inset-top));
+    box-shadow: 0 3px 10px rgba(0,0,0,0.15);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .brand-row { display: flex; align-items: center; justify-content: space-between; }
+  .brand-title { font-size: 20px; font-weight: 800; letter-spacing: 0.5px; margin: 0; display: flex; align-items: center; gap: 8px; }
+  .badge-italy { background: #fff; color: var(--primary); font-size: 11px; padding: 2px 8px; border-radius: 99px; font-weight: 800; }
+  .brand-sub { font-size: 12px; opacity: 0.9; margin-top: 4px; }
+  .nav-tabs {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    padding: 12px 16px 4px;
+    background: var(--primary-dark);
+    scrollbar-width: none;
+  }
+  .nav-tabs::-webkit-scrollbar { display: none; }
+  .tab-btn {
+    background: rgba(255,255,255,0.12);
+    color: #fff;
+    border: none;
+    padding: 9px 14px;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 700;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: 0.2s;
+  }
+  .tab-btn.active { background: #fff; color: var(--primary); }
+  .container { max-width: 900px; margin: 0 auto; padding: 14px; }
+  .section { display: none; }
+  .section.active { display: block; }
+  .card {
+    background: var(--card);
+    border-radius: 14px;
+    padding: 16px;
+    margin-bottom: 14px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    border: 1px solid var(--border);
+  }
+  .card-title { font-size: 16px; font-weight: 800; color: var(--primary); margin: 0 0 12px; display: flex; justify-content: space-between; align-items: center; }
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+  @media (max-width: 600px) { .grid-2, .grid-3 { grid-template-columns: 1fr; } }
+  .stat-box {
+    background: var(--primary-light);
+    border-radius: 12px;
+    padding: 12px;
+    border-right: 4px solid var(--primary);
+  }
+  .stat-label { font-size: 12px; color: var(--muted); font-weight: 600; }
+  .stat-val { font-size: 18px; font-weight: 800; color: var(--primary-dark); margin-top: 4px; }
+  label { display: block; font-size: 12px; font-weight: 700; margin-bottom: 5px; color: var(--text); }
+  input, select, textarea {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    font-size: 14px;
+    background: #fff;
+    color: var(--text);
+    outline: none;
+  }
+  input:focus, select:focus { border-color: var(--primary); box-shadow: 0 0 0 2px rgba(0,98,65,0.12); }
+  .btn {
+    background: var(--primary);
+    color: #fff;
+    border: none;
+    padding: 11px 16px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    width: 100%;
+  }
+  .btn:active { transform: scale(0.98); }
+  .btn-secondary { background: #e8efec; color: var(--primary-dark); }
+  .btn-danger { background: var(--danger); color: #fff; }
+  .btn-sm { padding: 6px 10px; font-size: 12px; width: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th { background: var(--primary-light); color: var(--primary-dark); text-align: right; padding: 10px 8px; font-weight: 800; }
+  td { padding: 10px 8px; border-bottom: 1px solid var(--border); }
+  .badge { padding: 3px 8px; border-radius: 6px; font-size: 11px; font-weight: 700; }
+  .badge-paid { background: #e8f5e9; color: #2e7d32; }
+  .badge-debt { background: #ffebee; color: #c62828; }
+  .cart-item { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px dashed var(--border); }
+  
+  /* A4 Print Styles */
+  #invoice-modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.65);
+    z-index: 999;
+    overflow-y: auto;
+    padding: 16px;
+  }
+  .a4-sheet {
+    background: #fff;
+    width: 100%;
+    max-width: 210mm;
+    min-height: 280mm;
+    margin: 0 auto;
+    padding: 16mm;
+    border-radius: 8px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    position: relative;
+  }
+  .inv-header {
+    background: var(--primary);
+    color: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+  .inv-footer-quote {
+    margin-top: 30px;
+    padding: 14px;
+    background: var(--primary-light);
+    border-right: 4px solid var(--primary);
+    border-radius: 8px;
+    text-align: center;
+    font-weight: 700;
+    color: var(--primary-dark);
+    font-size: 14px;
+  }
+  @media print {
+    @page { size: A4 portrait; margin: 10mm; }
+    body * { visibility: hidden; }
+    #invoice-modal, #invoice-modal * { visibility: visible; }
+    #invoice-modal { position: absolute; left: 0; top: 0; width: 100%; background: #fff; padding: 0; }
+    .a4-sheet { box-shadow: none; width: 100%; max-width: 100%; min-height: auto; padding: 5mm; }
+    .no-print { display: none !important; }
+  }
+</style>
+</head>
+<body>
+
+<header class="no-print">
+  <div class="brand-row">
+    <h1 class="brand-title">LA VERA COFFEE <span class="badge-italy">ITALY</span></h1>
+    <button class="btn btn-sm btn-secondary" onclick="exportBackup()">نسخة احتياطية</button>
+  </div>
+  <div class="brand-sub">نظام إدارة المبيعات والمخزون والأرباح (دينار عراقي د.ع)</div>
+</header>
+
+<div class="nav-tabs no-print">
+  <button class="tab-btn active" onclick="switchTab('pos', this)">نقطة البيع والفواتير</button>
+  <button class="tab-btn" onclick="switchTab('beans', this)">مخزون القهوة</button>
+  <button class="tab-btn" onclick="switchTab('bags', this)">مخزون الأكياس والتغليف</button>
+  <button class="tab-btn" onclick="switchTab('debts', this)">الديون والعملاء</button>
+  <button class="tab-btn" onclick="switchTab('expenses', this)">المصاريف والأرباح</button>
+</div>
+
+<div class="container no-print">
+
+  <!-- POS SECTION -->
+  <div id="tab-pos" class="section active">
+    <div class="card">
+      <div class="card-title">إنشاء فاتورة بيع جديدة</div>
+      <div class="grid-2" style="margin-bottom:10px;">
+        <div>
+          <label>اسم الزبون / الكافيه</label>
+          <input type="text" id="cust-name" placeholder="مثال: كافيه روما - كركوك">
+        </div>
+        <div>
+          <label>رقم الهاتف (اختياري)</label>
+          <input type="tel" id="cust-phone" placeholder="0770xxxxxxx">
+        </div>
+      </div>
+      <div class="grid-3" style="margin-bottom:10px;">
+        <div>
+          <label>نوع القهوة</label>
+          <select id="pos-bean" onchange="fillBeanPrice()"></select>
+        </div>
+        <div>
+          <label>نوع البيع</label>
+          <select id="pos-tier" onchange="fillBeanPrice()">
+            <option value="wholesale">سعر الجملة</option>
+            <option value="retail">سعر المفرد</option>
+          </select>
+        </div>
+        <div>
+          <label>حجم الكيس (كغم)</label>
+          <select id="pos-bag-size">
+            <option value="1">1 كغم (يخصم كيس 1 كغم)</option>
+            <option value="0.5">0.5 كغم (يخصم كيس 500 غم)</option>
+            <option value="0.25">0.25 كغم (يخصم كيس 250 غم)</option>
+            <option value="0">بدون كيس</option>
+          </select>
+        </div>
+      </div>
+      <div class="grid-2" style="margin-bottom:12px;">
+        <div>
+          <label>الكمية المباعة (كغم)</label>
+          <input type="number" id="pos-qty" value="1" min="0.25" step="0.25">
+        </div>
+        <div>
+          <label>سعر الكيلو الواحد (د.ع)</label>
+          <input type="number" id="pos-price" placeholder="0">
+        </div>
+      </div>
+      <button class="btn btn-secondary" onclick="addToCart()">+ إضافة إلى الفاتورة</button>
+
+      <div id="cart-box" style="margin-top:14px;"></div>
+
+      <div class="grid-2" style="margin-top:14px;">
+        <div>
+          <label>حالة الدفع</label>
+          <select id="pos-payment" onchange="togglePaidInput()">
+            <option value="paid">نقدي (مدفوع بالكامل)</option>
+            <option value="debt">آجل (دين على الزبون)</option>
+            <option value="partial">دفع جزئي</option>
+          </select>
+        </div>
+        <div id="partial-box" style="display:none;">
+          <label>المبلغ الواصل نقداً (د.ع)</label>
+          <input type="number" id="pos-paid-amount" value="0">
+        </div>
+      </div>
+      <div style="margin-top:14px;">
+        <button class="btn" onclick="completeSale()">حفظ الفاتورة وطباعة وصل A4</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">سجل الفواتير الأخيرة</div>
+      <div style="overflow-x:auto;">
+        <table>
+          <thead>
+            <tr>
+              <th>رقم</th>
+              <th>الزبون</th>
+              <th>المجموع</th>
+              <th>الحالة</th>
+              <th>الوصل</th>
+            </tr>
+          </thead>
+          <tbody id="sales-table"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- BEANS INVENTORY -->
+  <div id="tab-beans" class="section">
+    <div class="card">
+      <div class="card-title">إضافة / تحديث صنف قهوة</div>
+      <div class="grid-2" style="margin-bottom:10px;">
+        <div>
+          <label>اسم الخلطة / المحصول</label>
+          <input type="text" id="bean-name" placeholder="مثال: إسبريسو 80/20 إيطالي">
+        </div>
+        <div>
+          <label>الكمية المتوفرة (كغم)</label>
+          <input type="number" id="bean-stock" placeholder="100">
+        </div>
+      </div>
+      <div class="grid-3" style="margin-bottom:12px;">
+        <div>
+          <label>سعر التكلفة للكيلو (د.ع)</label>
+          <input type="number" id="bean-cost" placeholder="14000">
+        </div>
+        <div>
+          <label>سعر بيع الجملة (د.ع)</label>
+          <input type="number" id="bean-wholesale" placeholder="18000">
+        </div>
+        <div>
+          <label>سعر بيع المفرد (د.ع)</label>
+          <input type="number" id="bean-retail" placeholder="22000">
+        </div>
+      </div>
+      <button class="btn" onclick="saveBean()">حفظ الصنف في المخزون</button>
+    </div>
+
+    <div class="card">
+      <div class="card-title">مخزون القهوة الحالي</div>
+      <div style="overflow-x:auto;">
+        <table>
+          <thead>
+            <tr>
+              <th>الصنف</th>
+              <th>المتوفر</th>
+              <th>التكلفة</th>
+              <th>الجملة</th>
+              <th>المفرد</th>
+              <th>حذف</th>
+            </tr>
+          </thead>
+          <tbody id="beans-table"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- BAGS INVENTORY -->
+  <div id="tab-bags" class="section">
+    <div class="card">
+      <div class="card-title">إضافة وجبة أكياس تغليف</div>
+      <div class="grid-3" style="margin-bottom:12px;">
+        <div>
+          <label>حجم الكيس</label>
+          <select id="bag-size">
+            <option value="1">كيس 1 كغم</option>
+            <option value="0.5">كيس 500 غم (0.5 كغم)</option>
+            <option value="0.25">كيس 250 غم (0.25 كغم)</option>
+          </select>
+        </div>
+        <div>
+          <label>العدد المضاف (كيس)</label>
+          <input type="number" id="bag-qty" placeholder="10000">
+        </div>
+        <div>
+          <label>تكلفة الكيس الواحد (د.ع)</label>
+          <input type="number" id="bag-cost" placeholder="1000">
+        </div>
+      </div>
+      <button class="btn" onclick="addBags()">إضافة إلى مخزون الأكياس</button>
+    </div>
+
+    <div class="card">
+      <div class="card-title">رصيد الأكياس المتبقي</div>
+      <div class="grid-3" id="bags-summary"></div>
+      <p style="font-size:12px; color:var(--muted); margin-top:10px;">
+        * يتم خصم الأكياس تلقائياً عند كل عملية بيع واحتساب تكلفتها ضمن المصاريف التشغيلية وصافي الربح.
+      </p>
+    </div>
+  </div>
+
+  <!-- DEBTS -->
+  <div id="tab-debts" class="section">
+    <div class="card">
+      <div class="card-title">الديون المستحقة على الزبائن</div>
+      <div style="overflow-x:auto;">
+        <table>
+          <thead>
+            <tr>
+              <th>الزبون</th>
+              <th>المتبقي بذمته</th>
+              <th>تسديد دفعة</th>
+            </tr>
+          </thead>
+          <tbody id="debts-table"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- EXPENSES & PROFITS -->
+  <div id="tab-expenses" class="section">
+    <div class="grid-2" style="margin-bottom:14px;">
+      <div class="stat-box">
+        <div class="stat-label">إجمالي المبيعات</div>
+        <div class="stat-val" id="stat-revenue">0 د.ع</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-label">تكلفة البن + الأكياس المستهلكة</div>
+        <div class="stat-val" id="stat-cogs">0 د.ع</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-label">المصاريف التشغيلية الإضافية</div>
+        <div class="stat-val" id="stat-exp">0 د.ع</div>
+      </div>
+      <div class="stat-box" style="border-right-color: var(--accent);">
+        <div class="stat-label">صافي الربح الفعلي</div>
+        <div class="stat-val" id="stat-net">0 د.ع</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">تسجيل مصروف تشغيلي (إيجار، نقل، كهرباء، رواتب)</div>
+      <div class="grid-2" style="margin-bottom:10px;">
+        <div>
+          <label>بيان المصروف</label>
+          <input type="text" id="exp-desc" placeholder="مثال: أجور نقل بضاعة">
+        </div>
+        <div>
+          <label>المبلغ (د.ع)</label>
+          <input type="number" id="exp-amount" placeholder="25000">
+        </div>
+      </div>
+      <button class="btn" onclick="addExpense()">إضافة المصروف</button>
+    </div>
+
+    <div class="card">
+      <div class="card-title">سجل المصاريف التشغيلية</div>
+      <table>
+        <thead>
+          <tr><th>التاريخ</th><th>البيان</th><th>المبلغ</th></tr>
+        </thead>
+        <tbody id="expenses-table"></tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+
+<!-- A4 INVOICE MODAL -->
+<div id="invoice-modal">
+  <div style="max-width:210mm; margin:0 auto 10px; display:flex; gap:8px;" class="no-print">
+    <button class="btn" onclick="window.print()">طباعة الوصل (قياس A4)</button>
+    <button class="btn btn-secondary" onclick="closeInvoice()">إغلاق</button>
+  </div>
+  <div class="a4-sheet" id="a4-content"></div>
+</div>
+
+<script>
+const STORAGE_KEY = 'lavera_coffee_iqd_v1';
+const QUOTES = [
+  "شكراً لثقتكم بـ LA VERA COFFEE Italy.. قهوة تُحمص بشغف لتليق بذائقتكم.",
+  "مع كل فنجان من LA VERA COFFEE Italy، تبدأ حكاية جودة لا تُنسى.",
+  "نسعد بشراكتكم المستمرة مع LA VERA COFFEE Italy.. الجودة الإيطالية الأصيلة."
+];
+
+let state = JSON.parse(localStorage.getItem(STORAGE_KEY)) || {
+  beans: [
+    { id: 1, name: 'إسبريسو 80/20 كلاسيك', stock: 200, cost: 13000, wholesale: 17000, retail: 21000 },
+    { id: 2, name: 'أرابيكا 100% سبيشال', stock: 100, cost: 16000, wholesale: 21000, retail: 25000 }
+  ],
+  bags: {
+    '1': { qty: 5000, cost: 1000 },
+    '0.5': { qty: 1000, cost: 750 },
+    '0.25': { qty: 1000, cost: 500 }
+  },
+  sales: [],
+  expenses: []
+};
+
+let cart = [];
+
+function saveState() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  renderAll();
+}
+
+function fmt(num) {
+  return Math.round(Number(num || 0)).toLocaleString('en-US') + ' د.ع';
+}
+
+function switchTab(id, btn) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + id).classList.add('active');
+  btn.classList.add('active');
+}
+
+function fillBeanPrice() {
+  const id = Number(document.getElementById('pos-bean').value);
+  const tier = document.getElementById('pos-tier').value;
+  const bean = state.beans.find(b => b.id === id);
+  if (bean) {
+    document.getElementById('pos-price').value = tier === 'wholesale' ? bean.wholesale : bean.retail;
+  }
+}
+
+function addToCart() {
+  const beanId = Number(document.getElementById('pos-bean').value);
+  const bean = state.beans.find(b => b.id === beanId);
+  const qty = Number(document.getElementById('pos-qty').value);
+  const price = Number(document.getElementById('pos-price').value);
+  const bagSize = document.getElementById('pos-bag-size').value;
+
+  if (!bean || qty <= 0 || price <= 0) return alert('يرجى التأكد من الكمية والسعر');
+  if (bean.stock < qty) return alert('الكمية المطلوبة أكبر من المتوفر في المخزون!');
+
+  const bagsNeeded = bagSize === '0' ? 0 : Math.ceil(qty / Number(bagSize));
+  const bagUnitCost = bagSize === '0' ? 0 : (state.bags[bagSize]?.cost || 0);
+
+  cart.push({
+    beanId: bean.id,
+    beanName: bean.name,
+    qty,
+    price,
+    total: qty * price,
+    beanCostTotal: qty * bean.cost,
+    bagSize,
+    bagsNeeded,
+    bagCostTotal: bagsNeeded * bagUnitCost
+  });
+  renderCart();
+}
+
+function renderCart() {
+  const box = document.getElementById('cart-box');
+  if (!cart.length) { box.innerHTML = ''; return; }
+  const sum = cart.reduce((a, b) => a + b.total, 0);
+  box.innerHTML = `
+    <div style="background:var(--primary-light); padding:10px; border-radius:10px;">
+      ${cart.map((item, idx) => `
+        <div class="cart-item">
+          <div>
+            <strong>${item.beanName}</strong> (${item.qty} كغم × ${fmt(item.price)})
+            ${item.bagsNeeded > 0 ? `<div style="font-size:11px; color:var(--muted);">يُخصم ${item.bagsNeeded} كيس حجم ${item.bagSize} كغم</div>` : ''}
+          </div>
+          <div>
+            <strong>${fmt(item.total)}</strong>
+            <button class="btn btn-danger btn-sm" style="margin-right:6px;" onclick="cart.splice(${idx},1);renderCart()">×</button>
+          </div>
+        </div>
+      `).join('')}
+      <div style="text-align:left; font-weight:800; font-size:16px; margin-top:8px; color:var(--primary-dark);">
+        الإجمالي: ${fmt(sum)}
+      </div>
+    </div>
+  `;
+}
+
+function togglePaidInput() {
+  const val = document.getElementById('pos-payment').value;
+  document.getElementById('partial-box').style.display = val === 'partial' ? 'block' : 'none';
+}
+
+function completeSale() {
+  if (!cart.length) return alert('أضف صنفاً واحداً على الأقل للفاتورة');
+  const custName = document.getElementById('cust-name').value.trim() || 'زبون نقدي';
+  const custPhone = document.getElementById('cust-phone').value.trim();
+  const payType = document.getElementById('pos-payment').value;
+  const total = cart.reduce((a, b) => a + b.total, 0);
+  const cogsBeans = cart.reduce((a, b) => a + b.beanCostTotal, 0);
+  const cogsBags = cart.reduce((a, b) => a + b.bagCostTotal, 0);
+
+  let paid = total;
+  if (payType === 'debt') paid = 0;
+  if (payType === 'partial') paid = Number(document.getElementById('pos-paid-amount').value || 0);
+
+  // Deduct stock
+  cart.forEach(item => {
+    const b = state.beans.find(x => x.id === item.beanId);
+    if (b) b.stock = Math.max(0, b.stock - item.qty);
+    if (item.bagSize !== '0' && state.bags[item.bagSize]) {
+      state.bags[item.bagSize].qty = Math.max(0, state.bags[item.bagSize].qty - item.bagsNeeded);
+    }
+  });
+
+  const sale = {
+    id: state.sales.length + 1001,
+    date: new Date().toLocaleDateString('ar-IQ'),
+    custName,
+    custPhone,
+    items: [...cart],
+    total,
+    paid,
+    remaining: Math.max(0, total - paid),
+    cogsBeans,
+    cogsBags
+  };
+
+  state.sales.unshift(sale);
+  cart = [];
+  document.getElementById('cust-name').value = '';
+  document.getElementById('cust-phone').value = '';
+  renderCart();
+  saveState();
+  openInvoice(sale.id);
+}
+
+function openInvoice(id) {
+  const s = state.sales.find(x => x.id === id);
+  if (!s) return;
+  const quote = QUOTES[s.id % QUOTES.length];
+  document.getElementById('a4-content').innerHTML = `
+    <div class="inv-header">
+      <div>
+        <h2 style="margin:0; font-size:24px;">LA VERA COFFEE Italy</h2>
+        <div style="font-size:13px; opacity:0.9; margin-top:4px;">فاتورة مبيعات رسمية - بالدينار العراقي</div>
+      </div>
+      <div style="text-align:left; font-size:13px;">
+        <div><strong>رقم الفاتورة:</strong> #${s.id}</div>
+        <div><strong>التاريخ:</strong> ${s.date}</div>
+      </div>
+    </div>
+    <div style="display:flex; justify-content:space-between; margin-bottom:20px; padding:12px; border:1px solid var(--border); border-radius:8px;">
+      <div><strong>اسم الزبون:</strong> ${s.custName}</div>
+      <div><strong>الهاتف:</strong> ${s.custPhone || '-'}</div>
+    </div>
+    <table style="margin-bottom:20px; border:1px solid var(--border);">
+      <thead>
+        <tr>
+          <th>ت</th>
+          <th>الصنف</th>
+          <th>الكمية (كغم)</th>
+          <th>التغليف</th>
+          <th>سعر الكيلو</th>
+          <th>المجموع</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${s.items.map((it, i) => `
+          <tr>
+            <td>${i + 1}</td>
+            <td>${it.beanName}</td>
+            <td>${it.qty}</td>
+            <td>${it.bagsNeeded > 0 ? it.bagsNeeded + ' كيس (' + it.bagSize + ' كغم)' : 'بدون'}</td>
+            <td>${fmt(it.price)}</td>
+            <td><strong>${fmt(it.total)}</strong></td>
+          </tr>
+        `).join('')}
+      </tbody>
+    </table>
+    <div style="width:55%; margin-right:auto; background:#f8faf9; padding:14px; border-radius:8px; border:1px solid var(--border);">
+      <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
+        <span>المجموع الكلي:</span><strong>${fmt(s.total)}</strong>
+      </div>
+      <div style="display:flex; justify-content:space-between; margin-bottom:8px; color:var(--success);">
+        <span>المبلغ المدفوع:</span><strong>${fmt(s.paid)}</strong>
+      </div>
+      <div style="display:flex; justify-content:space-between; font-size:16px; color:var(--danger); border-top:1px solid var(--border); padding-top:8px;">
+        <span>المتبقي (آجل):</span><strong>${fmt(s.remaining)}</strong>
+      </div>
+    </div>
+    <div class="inv-footer-quote">${quote}</div>
+  `;
+  document.getElementById('invoice-modal').style.display = 'block';
+}
+
+function closeInvoice() {
+  document.getElementById('invoice-modal').style.display = 'none';
+}
+
+function saveBean() {
+  const name = document.getElementById('bean-name').value.trim();
+  const stock = Number(document.getElementById('bean-stock').value);
+  const cost = Number(document.getElementById('bean-cost').value);
+  const wholesale = Number(document.getElementById('bean-wholesale').value);
+  const retail = Number(document.getElementById('bean-retail').value);
+  if (!name || stock < 0) return alert('يرجى إدخال اسم الصنف والكمية');
+  state.beans.push({ id: Date.now(), name, stock, cost, wholesale, retail });
+  document.getElementById('bean-name').value = '';
+  document.getElementById('bean-stock').value = '';
+  saveState();
+}
+
+function addBags() {
+  const size = document.getElementById('bag-size').value;
+  const qty = Number(document.getElementById('bag-qty').value);
+  const cost = Number(document.getElementById('bag-cost').value);
+  if (qty <= 0) return alert('يرجى إدخال عدد الأكياس');
+  state.bags[size].qty += qty;
+  if (cost > 0) state.bags[size].cost = cost;
+  document.getElementById('bag-qty').value = '';
+  saveState();
+}
+
+function payDebt(saleId) {
+  const s = state.sales.find(x => x.id === saleId);
+  if (!s) return;
+  const amt = Number(prompt('أدخل المبلغ المسدد بالدينار العراقي (المتبقي: ' + s.remaining + '):', s.remaining));
+  if (amt > 0) {
+    s.paid += amt;
+    s.remaining = Math.max(0, s.total - s.paid);
+    saveState();
+  }
+}
+
+function addExpense() {
+  const desc = document.getElementById('exp-desc').value.trim();
+  const amount = Number(document.getElementById('exp-amount').value);
+  if (!desc || amount <= 0) return alert('يرجى إدخال البيان والمبلغ');
+  state.expenses.unshift({ date: new Date().toLocaleDateString('ar-IQ'), desc, amount });
+  document.getElementById('exp-desc').value = '';
+  document.getElementById('exp-amount').value = '';
+  saveState();
+}
+
+function exportBackup() {
+  const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(state));
+  const a = document.createElement('a');
+  a.href = dataStr;
+  a.download = "lavera_coffee_backup.json";
+  a.click();
+}
+
+function renderAll() {
+  // Beans select & table
+  const sel = document.getElementById('pos-bean');
+  sel.innerHTML = state.beans.map(b => `<option value="${b.id}">${b.name} (${b.stock} كغم)</option>`).join('');
+  fillBeanPrice();
+
+  document.getElementById('beans-table').innerHTML = state.beans.map((b, idx) => `
+    <tr>
+      <td><strong>${b.name}</strong></td>
+      <td>${b.stock} كغم</td>
+      <td>${fmt(b.cost)}</td>
+      <td>${fmt(b.wholesale)}</td>
+      <td>${fmt(b.retail)}</td>
+      <td><button class="btn btn-danger btn-sm" onclick="state.beans.splice(${idx},1);saveState()">حذف</button></td>
+    </tr>
+  `).join('');
+
+  // Bags
+  document.getElementById('bags-summary').innerHTML = Object.entries(state.bags).map(([sz, info]) => `
+    <div class="stat-box">
+      <div class="stat-label">أكياس حجم ${sz} كغم</div>
+      <div class="stat-val">${info.qty.toLocaleString('en-US')} كيس</div>
+      <div style="font-size:11px; color:var(--muted);">تكلفة الكيس: ${fmt(info.cost)}</div>
+    </div>
+  `).join('');
+
+  // Sales
+  document.getElementById('sales-table').innerHTML = state.sales.map(s => `
+    <tr>
+      <td>#${s.id}</td>
+      <td>${s.custName}</td>
+      <td>${fmt(s.total)}</td>
+      <td><span class="badge ${s.remaining > 0 ? 'badge-debt' : 'badge-paid'}">${s.remaining > 0 ? 'آجل: ' + fmt(s.remaining) : 'مدفوع'}</span></td>
+      <td><button class="btn btn-secondary btn-sm" onclick="openInvoice(${s.id})">A4</button></td>
+    </tr>
+  `).join('');
+
+  // Debts
+  const debts = state.sales.filter(s => s.remaining > 0);
+  document.getElementById('debts-table').innerHTML = debts.length ? debts.map(s => `
+    <tr>
+      <td>${s.custName} (#${s.id})</td>
+      <td style="color:var(--danger); font-weight:800;">${fmt(s.remaining)}</td>
+      <td><button class="btn btn-sm" onclick="payDebt(${s.id})">تسديد</button></td>
+    </tr>
+  `).join('') : '<tr><td colspan="3" style="text-align:center; color:var(--muted);">لا توجد ديون معلقة</td></tr>';
+
+  // Stats & Expenses
+  const rev = state.sales.reduce((a, b) => a + b.total, 0);
+  const cogs = state.sales.reduce((a, b) => a + b.cogsBeans + b.cogsBags, 0);
+  const exp = state.expenses.reduce((a, b) => a + b.amount, 0);
+  document.getElementById('stat-revenue').innerText = fmt(rev);
+  document.getElementById('stat-cogs').innerText = fmt(cogs);
+  document.getElementById('stat-exp').innerText = fmt(exp);
+  document.getElementById('stat-net').innerText = fmt(rev - cogs - exp);
+
+  document.getElementById('expenses-table').innerHTML = state.expenses.map(e => `
+    <tr><td>${e.date}</td><td>${e.desc}</td><td>${fmt(e.amount)}</td></tr>
+  `).join('');
+}
+
+renderAll();
+</script>
+</body>
+</html>
